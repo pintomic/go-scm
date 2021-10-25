@@ -6,6 +6,7 @@ require (
 	github.com/ghodss/yaml v1.0.0
 	github.com/google/go-cmp v0.3.0
 	github.com/hashicorp/go-version v1.3.0 // indirect
+	github.com/microsoft/azure-devops-go-api/azuredevops v1.0.0-b5
 	github.com/mitchellh/copystructure v1.0.0
 	github.com/pkg/errors v0.8.1
 	github.com/shurcooL/githubv4 v0.0.0-20190718010115-4ba037080260

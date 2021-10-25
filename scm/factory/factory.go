@@ -11,6 +11,7 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/jenkins-x/go-scm/scm"
+	"github.com/jenkins-x/go-scm/scm/driver/azure"
 	"github.com/jenkins-x/go-scm/scm/driver/bitbucket"
 	"github.com/jenkins-x/go-scm/scm/driver/fake"
 	"github.com/jenkins-x/go-scm/scm/driver/gitea"
@@ -125,6 +126,11 @@ func newClient(driver, serverURL string, authOptions *AuthOptions, opts ...Clien
 			return nil, ErrMissingGitServerURL
 		}
 		client, err = stash.New(serverURL)
+	case "azure":
+		if serverURL == "" {
+			return nil, ErrMissingGitServerURL
+		}
+		client, err = azure.NewWithToken(serverURL, oauthToken)
 	default:
 		return nil, fmt.Errorf("Unsupported $GIT_KIND value: %s", driver)
 	}
