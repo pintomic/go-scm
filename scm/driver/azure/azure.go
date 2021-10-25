@@ -5,6 +5,8 @@ import (
 	"github.com/jenkins-x/go-scm/scm"
 	"github.com/microsoft/azure-devops-go-api/azuredevops"
 	"github.com/microsoft/azure-devops-go-api/azuredevops/core"
+	"github.com/microsoft/azure-devops-go-api/azuredevops/git"
+	"github.com/microsoft/azure-devops-go-api/azuredevops/servicehooks"
 	"net/url"
 	"strings"
 )
@@ -31,6 +33,13 @@ func NewWithToken(uri string, token string) (*scm.Client, error) {
 	client.AzureClient = &coreClient
 	client.BaseURL = base
 	client.Driver = scm.DriverAzure
+	gitClient, err := git.NewClient(ctx, connection)
+	if err != nil {
+		return nil, err
+	}
+	hooksClient := servicehooks.NewClient(ctx, connection)
+	client.Repositories = &repositoryService{ client , gitClient, hooksClient}
+
 	return client.Client, nil
 }
 
