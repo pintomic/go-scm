@@ -218,7 +218,15 @@ func (s *repositoryService) UpdateHook(ctx context.Context, repo string, input *
 
 // DeleteHook necessary
 func (s *repositoryService) DeleteHook(ctx context.Context, repo string, id string) (*scm.Response, error) {
-	panic("implement me")
+	subscriptionId, err := uuid.Parse(id)
+	if err != nil {
+		return nil, err
+	}
+	err = s.hooksClient.DeleteSubscription(ctx, servicehooks.DeleteSubscriptionArgs{SubscriptionId: &subscriptionId})
+	if err != nil {
+		return nil, err
+	}
+	return nil, nil
 }
 
 // IsCollaborator necessary

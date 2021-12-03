@@ -75,6 +75,10 @@ func (m mockHooksClient) ListSubscriptions(context.Context, servicehooks.ListSub
 	return &want, nil
 }
 
+func (m mockHooksClient) DeleteSubscription(context.Context, servicehooks.DeleteSubscriptionArgs) error {
+	return nil
+}
+
 // Tests
 func TestRepoFind(t *testing.T) {
 	repo := &repositoryService{&wrapper{
@@ -201,5 +205,17 @@ func TestHookCreate(t *testing.T) {
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
+	}
+}
+
+func TestHookDelete(t *testing.T) {
+	repo := &repositoryService{&wrapper{
+		Project: "test-project",
+	}, mockGitClient{}, mockHooksClient{}}
+
+	ctx := context.Background()
+	_, err := repo.DeleteHook(ctx, "test-repo", "302edab0-577a-4a36-9d34-6950a6706e58")
+	if err != nil {
+		t.Error(err)
 	}
 }
