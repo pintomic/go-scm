@@ -1,13 +1,13 @@
 [
   {
-    "Id": 1,
-    "State": "succeeded",
-    "Links": "",
-    "Description": "test-repo build succeeded",
-    "TargetUrl": "vstfs:///Build/Build/12345",
-    "Context": {
-      "Name": "build/test-repo",
-      "Genre": "continuous-integration"
+    "id": 1,
+    "state": "succeeded",
+    "links": "",
+    "description": "test-repo build succeeded",
+    "targetUrl": "vstfs:///Build/Build/12345",
+    "context": {
+      "name": "build/test-repo",
+      "genre": "continuous-integration"
     }
   }
 ]

@@ -1,17 +1,17 @@
 [
   {
-    "Id": "d53603cc-3f67-45ea-b310-aaa5ef6ec061",
-    "PublisherId": "tfs",
-    "EventType": "git.pullrequest.created",
-    "ConsumerId": "webHooks",
-    "ConsumerActionId": "httpRequest",
-    "ActionDescription": "To host jx.staging.example.com",
-    "EventDescription": "Repository test-repo",
-    "Url": "https://dev.azure.com/test-organization/_apis/hooks/subscriptions/d53603cc-3f67-45ea-b310-aaa5ef6ec061",
-    "ConsumerInputs": {
+    "id": "d53603cc-3f67-45ea-b310-aaa5ef6ec061",
+    "publisherId": "tfs",
+    "eventType": "git.pullrequest.created",
+    "consumerId": "webHooks",
+    "consumerActionId": "httpRequest",
+    "actionDescription": "To host jx.staging.example.com",
+    "eventDescription": "Repository test-repo",
+    "url": "https://dev.azure.com/test-organization/_apis/hooks/subscriptions/d53603cc-3f67-45ea-b310-aaa5ef6ec061",
+    "consumerInputs": {
       "url": "https://jx.staging.example.com/hook"
     },
-    "PublisherInputs": {
+    "publisherInputs": {
       "projectId": "2152f95d-fec5-4945-9ea2-5db3d0f85250",
       "repository": "616f2667-ec20-47de-8912-06c410e2860c"
     }

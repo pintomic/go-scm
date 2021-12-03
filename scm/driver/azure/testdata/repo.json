@@ -1,16 +1,16 @@
 {
-  "Id": "616f2667-ec20-47de-8912-06c410e2860c",
-  "Name": "test-repository",
-  "FullName": "test-repository",
-  "DefaultBranch": "main",
-  "Private": true,
-  "RemoteUrl": "https://dev.azure.com/test-organization/test-project/_git/test-repository",
-  "SshUrl": "git@ssh.dev.azure.com:v3/test-organization/test-project/test-repository",
-  "WebUrl": "https://dev.azure.com/test-organization/test-project/_git/test-repository",
-  "Project": {
-    "Visibility": "private",
-    "Name": "test-project",
-    "LastUpdateTime": "2017-10-22T18:25:33Z",
-    "Id": "2152f95d-fec5-4945-9ea2-5db3d0f85250"
+  "id": "616f2667-ec20-47de-8912-06c410e2860c",
+  "name": "test-repository",
+  "fullName": "test-repository",
+  "defaultBranch": "main",
+  "private": true,
+  "remoteUrl": "https://dev.azure.com/test-organization/test-project/_git/test-repository",
+  "sshUrl": "git@ssh.dev.azure.com:v3/test-organization/test-project/test-repository",
+  "webUrl": "https://dev.azure.com/test-organization/test-project/_git/test-repository",
+  "project": {
+    "visibility": "private",
+    "name": "test-project",
+    "lastUpdateTime": "2017-10-22T18:25:33Z",
+    "id": "2152f95d-fec5-4945-9ea2-5db3d0f85250"
   }
 }
