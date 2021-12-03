@@ -1,0 +1,13 @@
+[
+    {
+        "Id": 1,
+        "State": "succeeded",
+        "Links": "",
+        "Description": "test-repo build succeeded",
+        "TargetUrl": "vstfs:///Build/Build/12345",
+        "Context": {
+            "Name": "build/test-repo",
+            "Genre": "continuous-integration"
+        }
+    }
+]

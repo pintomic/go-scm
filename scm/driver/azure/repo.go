@@ -3,11 +3,14 @@ package azure
 import (
 	"code.gitea.io/sdk/gitea"
 	"context"
+	"fmt"
+	"github.com/google/uuid"
 	"github.com/jenkins-x/go-scm/scm"
 	"github.com/microsoft/azure-devops-go-api/azuredevops/core"
 	"github.com/microsoft/azure-devops-go-api/azuredevops/git"
 	"github.com/microsoft/azure-devops-go-api/azuredevops/servicehooks"
 )
+
 /*
  * https://docs.microsoft.com/en-us/rest/api/azure/devops/git/?view=azure-devops-rest-6.1
  */
@@ -22,6 +25,7 @@ type repositoryService struct {
 func (s *repositoryService) Find(ctx context.Context, repo string) (*scm.Repository, *scm.Response, error) {
 	out, err := s.gitClient.GetRepository(ctx, git.GetRepositoryArgs{
 		RepositoryId: &repo,
+		Project:      &s.client.Project,
 	})
 	if err != nil {
 		return nil, nil, err
@@ -56,9 +60,12 @@ func (s *repositoryService) ListHooks(ctx context.Context, repo string, opts scm
 
 // ListStatus necessary
 func (s *repositoryService) ListStatus(ctx context.Context, repo string, ref string, _ scm.ListOptions) ([]*scm.Status, *scm.Response, error) {
+	latestOnly := false
 	statuses, err := s.gitClient.GetStatuses(ctx, git.GetStatusesArgs{
 		CommitId:     &ref,
 		RepositoryId: &repo,
+		Project:      &s.client.Project,
+		LatestOnly:   &latestOnly,
 	})
 	if err != nil {
 		return nil, nil, err
@@ -91,23 +98,24 @@ func (s *repositoryService) CreateStatus(ctx context.Context, repo string, ref s
 
 // FindCombinedStatus necessary
 func (s *repositoryService) FindCombinedStatus(ctx context.Context, repo, ref string) (*scm.CombinedStatus, *scm.Response, error) {
-	statuses, _, err := s.ListStatus(ctx, repo, ref, scm.ListOptions{})
-	if err != nil {
-		return nil, nil, err
-	}
-	latestOnly := true
-	latest, err := s.gitClient.GetStatuses(ctx, git.GetStatusesArgs{
+	latestOnly := false
+	gitStatuses, err := s.gitClient.GetStatuses(ctx, git.GetStatusesArgs{
 		CommitId:     &ref,
 		RepositoryId: &repo,
-		LatestOnly: &latestOnly,
+		Project:      &s.client.Project,
+		LatestOnly:   &latestOnly,
 	})
 	if err != nil {
 		return nil, nil, err
 	}
-	status := convertStatusList(latest)
+	statuses := convertStatusList(gitStatuses)
+	latest := scm.StateUnknown
+	if len(statuses) > 0 {
+		latest = statuses[0].State
+	}
 	return &scm.CombinedStatus{
-		State: status[0].State,
-		Sha: ref,
+		State:    latest,
+		Sha:      ref,
 		Statuses: statuses,
 	}, nil, nil
 }
@@ -159,16 +167,15 @@ func (s *repositoryService) Delete(ctx context.Context, repo string) (*scm.Respo
 	return nil, scm.ErrNotSupported
 }
 
-func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
-	// TODO: iterate and consider ContinuationToken
-	projects, err := (*s.client.AzureClient).GetProjects(ctx, core.GetProjectsArgs{})
-	if err != nil {
-		return nil, nil, err
-	}
+func (s *repositoryService) List(ctx context.Context, _ scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
+
 	repos, err := s.gitClient.GetRepositories(ctx, git.GetRepositoriesArgs{
-		Project: projects.Value[2].Name,
+		Project: &s.client.Project,
 	})
-	return convertRepositoryList(repos), nil, err
+	if err == nil {
+		return convertRepositoryList(repos), nil, err
+	}
+	return nil, nil, err
 }
 
 //

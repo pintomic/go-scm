@@ -1,0 +1,18 @@
+{
+    "ID": "616f2667-ec20-47de-8912-06c410e2860c",
+    "Namespace": "test-project",
+    "Name": "test-repository",
+    "FullName": "test-repository",
+    "Perm": {
+        "Pull": true,
+        "Push": true,
+        "Admin": true
+    },
+    "Branch": "main",
+    "Private": true,
+    "Clone": "https://dev.azure.com/test-organization/test-project/_git/test-repository",
+    "CloneSSH": "git@ssh.dev.azure.com:v3/test-organization/test-project/test-repository",
+    "Link": "https://dev.azure.com/test-organization/test-project/_git/test-repository",
+    "Created": "2017-10-22T18:25:33Z",
+    "Updated": "2017-10-22T18:25:33Z"
+}

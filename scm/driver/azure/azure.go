@@ -2,6 +2,7 @@ package azure
 
 import (
 	"context"
+	"fmt"
 	"github.com/jenkins-x/go-scm/scm"
 	"github.com/microsoft/azure-devops-go-api/azuredevops"
 	"github.com/microsoft/azure-devops-go-api/azuredevops/core"
@@ -19,12 +20,23 @@ func NewWithToken(uri string, token string) (*scm.Client, error) {
 	if !strings.HasSuffix(base.Path, "/") {
 		base.Path = base.Path + "/"
 	}
+	urlPart := strings.Split(base.Path, "/")
+	if len(urlPart) < 3 {
+		return nil, fmt.Errorf("azure server url %s /organization/project", uri)
+	}
+	organization := urlPart[1]
+	project := urlPart[2]
+	base.Path = organization + "/"
 	// Create a connection to your organization
-	connection := azuredevops.NewPatConnection(uri, token)
+	connection := azuredevops.NewPatConnection(base.String(), token)
 
 	ctx := context.Background()
 
-	client := &wrapper{Client: new(scm.Client)}
+	client := &wrapper{
+		Client:       new(scm.Client),
+		Organization: organization,
+		Project:      project,
+	}
 	// Create a client to interact with the Core area
 	coreClient, err := core.NewClient(ctx, connection)
 	if err != nil {
@@ -38,7 +50,9 @@ func NewWithToken(uri string, token string) (*scm.Client, error) {
 		return nil, err
 	}
 	hooksClient := servicehooks.NewClient(ctx, connection)
-	client.Repositories = &repositoryService{ client , gitClient, hooksClient}
+	client.Repositories = &repositoryService{client, gitClient, hooksClient}
+	client.Webhooks = &webhookService{client, hooksClient}
+	client.Git = &gitService{client, gitClient}
 
 	return client.Client, nil
 }
@@ -47,5 +61,7 @@ func NewWithToken(uri string, token string) (*scm.Client, error) {
 // for making http requests and unmarshalling the response.
 type wrapper struct {
 	*scm.Client
-	AzureClient *core.Client
+	AzureClient  *core.Client
+	Organization string
+	Project      string
 }

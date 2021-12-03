@@ -1,0 +1,8 @@
+[
+    {
+        "State": "success",
+        "Label": "build/test-repo",
+        "Desc": "test-repo build succeeded",
+        "Target": "vstfs:///Build/Build/12345"
+    }
+]

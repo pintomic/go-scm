@@ -5,6 +5,7 @@ require (
 	github.com/bluekeyes/go-gitdiff v0.4.0
 	github.com/ghodss/yaml v1.0.0
 	github.com/google/go-cmp v0.3.0
+	github.com/google/uuid v1.1.1 // indirect
 	github.com/hashicorp/go-version v1.3.0 // indirect
 	github.com/microsoft/azure-devops-go-api/azuredevops v1.0.0-b5
 	github.com/mitchellh/copystructure v1.0.0
