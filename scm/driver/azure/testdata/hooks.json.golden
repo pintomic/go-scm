@@ -1,0 +1,10 @@
+[
+  {
+    "ID": "d53603cc-3f67-45ea-b310-aaa5ef6ec061",
+    "Name": "Repository test-repo",
+    "Target": "https://jx.staging.example.com/hook",
+    "Events": ["git.pullrequest.created"],
+    "Active": true,
+    "SkipVerify": false
+  }
+]

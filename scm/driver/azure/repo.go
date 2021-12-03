@@ -56,7 +56,26 @@ func (s *repositoryService) ListLabels(ctx context.Context, repo string, opts sc
 }
 
 func (s *repositoryService) ListHooks(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Hook, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	gitRepo, err := s.gitClient.GetRepository(ctx, git.GetRepositoryArgs{
+		RepositoryId: &repo,
+		Project:      &s.client.Project,
+	})
+	if err != nil {
+		return nil, nil, err
+	}
+	subs, err := s.hooksClient.ListSubscriptions(ctx, servicehooks.ListSubscriptionsArgs{})
+	if err != nil {
+		return nil, nil, err
+	}
+
+	repoId := gitRepo.Id.String()
+	var dst []*scm.Hook
+	for _, subscription := range *subs {
+		if (*subscription.PublisherInputs)["repository"] == repoId {
+			dst = append(dst, convertSubscription(subscription))
+		}
+	}
+	return dst, nil, nil
 }
 
 // ListStatus necessary
@@ -272,5 +291,16 @@ func convertFromState(from scm.State) git.GitStatusState {
 		return git.GitStatusStateValues.Failed
 	default:
 		return git.GitStatusStateValues.Error
+	}
+}
+
+func convertSubscription(from servicehooks.Subscription) *scm.Hook {
+	return &scm.Hook{
+		ID:         from.Id.String(),
+		Name:       *from.EventDescription,
+		Target:     (*from.ConsumerInputs)["url"],
+		Events:     []string{*from.EventType},
+		Active:     true,
+		SkipVerify: false,
 	}
 }

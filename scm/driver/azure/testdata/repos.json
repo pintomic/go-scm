@@ -1,0 +1,17 @@
+[
+  {
+    "Id": "616f2667-ec20-47de-8912-06c410e2860c",
+    "Name": "test-repository",
+    "FullName": "test-repository",
+    "DefaultBranch": "main",
+    "Private": true,
+    "RemoteUrl": "https://dev.azure.com/test-organization/test-project/_git/test-repository",
+    "SshUrl": "git@ssh.dev.azure.com:v3/test-organization/test-project/test-repository",
+    "WebUrl": "https://dev.azure.com/test-organization/test-project/_git/test-repository",
+    "Project": {
+      "Visibility": "private",
+      "Name": "test-project",
+      "LastUpdateTime": "2017-10-22T18:25:33Z"
+    }
+  }
+]
