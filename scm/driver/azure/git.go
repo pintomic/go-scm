@@ -28,7 +28,15 @@ func (g gitService) FindBranch(ctx context.Context, repo, name string) (*scm.Ref
 }
 
 func (g gitService) FindCommit(ctx context.Context, repo, ref string) (*scm.Commit, *scm.Response, error) {
-	panic("implement me")
+	commit, err := g.gitClient.GetCommit(ctx, git.GetCommitArgs{
+		CommitId:     &ref,
+		RepositoryId: &repo,
+		Project:      &g.client.Project,
+	})
+	if err != nil {
+		return nil, nil, err
+	}
+	return convertCommit(*commit), nil, nil
 }
 
 func (g gitService) FindTag(ctx context.Context, repo, name string) (*scm.Reference, *scm.Response, error) {
@@ -72,4 +80,27 @@ func (g gitService) DeleteRef(ctx context.Context, repo, ref string) (*scm.Respo
 
 func (g gitService) CreateRef(ctx context.Context, repo, ref, sha string) (*scm.Reference, *scm.Response, error) {
 	panic("implement me")
+}
+
+func convertCommit(from git.GitCommit) *scm.Commit {
+	return &scm.Commit{
+		Sha:     *from.CommitId,
+		Message: *from.Comment,
+		Author: scm.Signature{
+			Name:   *from.Author.Name,
+			Email:  *from.Author.Email,
+			Date:   from.Author.Date.Time,
+			Avatar: *from.Author.ImageUrl,
+		},
+		Link: *from.RemoteUrl,
+		Committer: scm.Signature{
+			Name:   *from.Committer.Name,
+			Email:  *from.Committer.Email,
+			Date:   from.Committer.Date.Time,
+			Avatar: *from.Committer.ImageUrl,
+		},
+		Tree: scm.CommitTree{
+			Sha: *from.TreeId,
+		},
+	}
 }

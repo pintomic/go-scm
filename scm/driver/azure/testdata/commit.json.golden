@@ -1,0 +1,20 @@
+{
+    "Sha": "7fd1a60b01f91b314f59955a4e4d4e80d8edf11d",
+    "Message": "Fixed Typo",
+    "Tree": {
+        "Sha": "b4eecafa9be2f2006ce1b709d6857b07069b4608"
+    },
+    "Author": {
+        "Name": "The Author",
+        "Email": "author@nowhere.com",
+        "Date": "2012-03-06T23:06:50Z",
+        "Avatar": "https://dev.azure.com/test-organization/_apis/GraphProfile/MemberAvatars/aad.MmVhOWE5YWQtNGY3MS03ZGFkLTkxMDktNjZlM2RjOTUyOWUz"
+    },
+    "Committer": {
+        "Name": "The Committer",
+        "Email": "committer@nowhere.com",
+        "Date": "2012-03-06T23:06:50Z",
+        "Avatar": "https://dev.azure.com/test-organization/_apis/GraphProfile/MemberAvatars/aad.MmVhOWE5YWQtNGY3MS03ZGFkLTkxMDktNjZlM2RjOTUyOWUz"
+    },
+    "Link": "https://dev.azure.com/test-organization/test-project/_git/test-repo/commit/7fd1a60b01f91b314f59955a4e4d4e80d8edf11d"
+}
