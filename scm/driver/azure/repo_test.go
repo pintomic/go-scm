@@ -31,8 +31,19 @@ func (m mockGitClient) GetRepository(context.Context, git.GetRepositoryArgs) (*g
 	return &want, nil
 }
 
+func (m mockGitClient) GetRepositories(context.Context, git.GetRepositoriesArgs) (*[]git.GitRepository, error) {
+	var want []git.GitRepository
+	raw, err := ioutil.ReadFile("testdata/repos.json")
+	json.Unmarshal(raw, &want)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(want)
+	return &want, nil
+}
+
 func (m mockGitClient) GetStatuses(context.Context, git.GetStatusesArgs) (*[]git.GitStatus, error) {
-	want := []git.GitStatus{}
+	var want []git.GitStatus
 	raw, err := ioutil.ReadFile("testdata/statuses.json")
 	json.Unmarshal(raw, &want)
 	if err != nil {
@@ -63,6 +74,27 @@ func TestRepoFind(t *testing.T) {
 	}
 }
 
+func TestRepoList(t *testing.T) {
+	repo := &repositoryService{&wrapper{
+		Project: "test-project",
+	}, mockGitClient{}, mockHooksClient{}}
+
+	ctx := context.Background()
+	got, _, err := repo.List(ctx, scm.ListOptions{})
+	if err != nil {
+		t.Error(err)
+	}
+
+	var want []*scm.Repository
+	raw, _ := ioutil.ReadFile("testdata/repos.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
 func TestStatusList(t *testing.T) {
 	repo := &repositoryService{&wrapper{
 		Project: "test-project",
@@ -74,7 +106,7 @@ func TestStatusList(t *testing.T) {
 		t.Error(err)
 	}
 
-	want := []*scm.Status{}
+	var want []*scm.Status
 	raw, _ := ioutil.ReadFile("testdata/statuses.json.golden")
 	json.Unmarshal(raw, &want)
 

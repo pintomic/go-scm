@@ -12,6 +12,7 @@ import (
 )
 
 /*
+ * https://docs.microsoft.com/en-us/rest/api/azure/devops/git/?view=azure-devops-rest-5.1
  * https://docs.microsoft.com/en-us/rest/api/azure/devops/git/?view=azure-devops-rest-6.1
  */
 
