@@ -1,0 +1,17 @@
+{
+  "Id": "d53603cc-3f67-45ea-b310-aaa5ef6ec061",
+  "PublisherId": "tfs",
+  "EventType": "git.pullrequest.created",
+  "ConsumerId": "webHooks",
+  "ConsumerActionId": "httpRequest",
+  "ActionDescription": "To host jx.staging.example.com",
+  "EventDescription": "Repository test-repo",
+  "Url": "https://dev.azure.com/test-organization/_apis/hooks/subscriptions/d53603cc-3f67-45ea-b310-aaa5ef6ec061",
+  "ConsumerInputs": {
+    "url": "https://jx.staging.example.com/hook"
+  },
+  "PublisherInputs": {
+    "projectId": "",
+    "repository": "616f2667-ec20-47de-8912-06c410e2860c"
+  }
+}

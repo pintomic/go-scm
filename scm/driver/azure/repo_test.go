@@ -127,6 +127,27 @@ func TestStatusList(t *testing.T) {
 	}
 }
 
+func TestHookFind(t *testing.T) {
+	repo := &repositoryService{&wrapper{
+		Project: "test-project",
+	}, mockGitClient{}, mockHooksClient{}}
+
+	ctx := context.Background()
+	got, _, err := repo.FindHook(ctx, "test-repo", "d53603cc-3f67-45ea-b310-aaa5ef6ec061")
+	if err != nil {
+		t.Error(err)
+	}
+
+	var want *scm.Hook
+	raw, _ := ioutil.ReadFile("testdata/hook.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
 func TestHooksList(t *testing.T) {
 	repo := &repositoryService{&wrapper{
 		Project: "test-project",

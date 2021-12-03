@@ -35,7 +35,25 @@ func (s *repositoryService) Find(ctx context.Context, repo string) (*scm.Reposit
 }
 
 func (s *repositoryService) FindHook(ctx context.Context, repo string, id string) (*scm.Hook, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	gitRepo, err := s.gitClient.GetRepository(ctx, git.GetRepositoryArgs{
+		RepositoryId: &repo,
+		Project:      &s.client.Project,
+	})
+	if err != nil {
+		return nil, nil, err
+	}
+	subs, err := s.hooksClient.ListSubscriptions(ctx, servicehooks.ListSubscriptionsArgs{})
+	if err != nil {
+		return nil, nil, err
+	}
+
+	repoId := gitRepo.Id.String()
+	for _, subscription := range *subs {
+		if (*subscription.PublisherInputs)["repository"] == repoId && subscription.Id.String() == id {
+			return convertSubscription(subscription), nil, nil
+		}
+	}
+	return nil, nil, fmt.Errorf("Couldn't find servicehook")
 }
 
 func (s *repositoryService) FindPerms(ctx context.Context, repo string) (*scm.Perm, *scm.Response, error) {
