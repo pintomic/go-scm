@@ -12,7 +12,7 @@
       "url": "https://jx.staging.example.com/hook"
     },
     "PublisherInputs": {
-      "projectId": "",
+      "projectId": "2152f95d-fec5-4945-9ea2-5db3d0f85250",
       "repository": "616f2667-ec20-47de-8912-06c410e2860c"
     }
   }

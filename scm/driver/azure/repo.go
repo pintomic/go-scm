@@ -168,8 +168,48 @@ func (s *repositoryService) Fork(ctx context.Context, input *scm.RepositoryInput
 
 // CreateHook necessary
 func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *scm.HookInput) (*scm.Hook, *scm.Response, error) {
-	panic("implement me")
+	gitRepo, err := s.gitClient.GetRepository(ctx, git.GetRepositoryArgs{
+		RepositoryId: &repo,
+		Project:      &s.client.Project,
+	})
+	if err != nil {
+		return nil, nil, err
+	}
+	events := convertHookEvent(input.Events)
+	actionDesc := "hook"
+	consumerId := "webHooks"
+	consumerActionId := "httpRequest"
+	publisherId := "tfs"
+	// TODO: verify url is not empty
+	url := input.Target
 
+	var dst []*scm.Hook
+	for _, event := range events {
+		subscription, err := s.hooksClient.CreateSubscription(ctx, servicehooks.CreateSubscriptionArgs{
+			Subscription: &servicehooks.Subscription{
+				ActionDescription: &actionDesc,
+				ConsumerId:        &consumerId,
+				ConsumerActionId:  &consumerActionId,
+				EventType:         &event,
+				PublisherId:       &publisherId,
+				ConsumerInputs: &map[string]string{
+					"url": url,
+				},
+				PublisherInputs: &map[string]string{
+					"projectId":  gitRepo.Project.Id.String(),
+					"repository": gitRepo.Id.String(),
+				},
+			},
+		})
+		if err != nil {
+			return nil, nil, err
+		}
+		dst = append(dst, convertSubscription(*subscription))
+	}
+	if len(dst) > 0 {
+		return dst[0], nil, nil
+	}
+	return nil, nil, fmt.Errorf("unable to create hook")
 }
 
 func (s *repositoryService) UpdateHook(ctx context.Context, repo string, input *scm.HookInput) (*scm.Hook, *scm.Response, error) {
@@ -206,7 +246,6 @@ func (s *repositoryService) Delete(ctx context.Context, repo string) (*scm.Respo
 }
 
 func (s *repositoryService) List(ctx context.Context, _ scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
-
 	repos, err := s.gitClient.GetRepositories(ctx, git.GetRepositoriesArgs{
 		Project: &s.client.Project,
 	})
@@ -321,4 +360,54 @@ func convertSubscription(from servicehooks.Subscription) *scm.Hook {
 		Active:     true,
 		SkipVerify: false,
 	}
+}
+
+//"build.complete"
+//"git.push"
+//"ms.vss-code.git-pullrequest-comment-event"
+//"git.pullrequest.created"
+//"git.pullrequest.merged"
+//"git.pullrequest.updated"
+//"ms.vss-release.release-abandoned-event"
+//"ms.vss-release.release-created-event"
+//"ms.vss-release.deployment-approval-completed-event"
+//"ms.vss-release.deployment-approval-pending-event"
+//"ms.vss-release.deployment-completed-event"
+//"ms.vss-release.deployment-started-event"
+//"ms.vss-pipelinechecks-events.approval-completed"
+//"ms.vss-pipelines.run-state-changed-event"
+//"ms.vss-pipelines.stage-state-changed-event"
+//"ms.vss-pipelinechecks-events.approval-pending"
+//"workitem.commented"
+//"workitem.created"
+//"workitem.deleted"
+//"workitem.restored"
+//"workitem.updated"
+func convertHookEvent(from scm.HookEvents) []string {
+	var events []string
+	if from.PullRequest {
+		events = append(events, "git.pullrequest.created")
+	}
+	if from.PullRequestComment {
+		events = append(events, "ms.vss-code.git-pullrequest-comment-event")
+	}
+	if from.Review {
+		events = append(events, "git.pullrequest.updated")
+	}
+	if from.ReviewComment {
+		events = append(events, "ms.vss-code.git-pullrequest-comment-event")
+	}
+	if from.Issue {
+		events = append(events, "workitem.created", "workitem.deleted", "workitem.restored", "workitem.udpated")
+	}
+	if from.IssueComment {
+		events = append(events, "workitem.commented")
+	}
+	if from.Push {
+		events = append(events, "git.push")
+	}
+	if from.Release {
+		events = append(events, "ms.vss-release.release-created-event")
+	}
+	return events
 }

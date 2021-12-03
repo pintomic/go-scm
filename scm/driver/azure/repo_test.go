@@ -53,6 +53,17 @@ func (m mockGitClient) GetStatuses(context.Context, git.GetStatusesArgs) (*[]git
 	return &want, nil
 }
 
+func (m mockHooksClient) CreateSubscription(context.Context, servicehooks.CreateSubscriptionArgs) (*servicehooks.Subscription, error) {
+	var want servicehooks.Subscription
+	raw, err := ioutil.ReadFile("testdata/hook.json")
+	json.Unmarshal(raw, &want)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(want)
+	return &want, nil
+}
+
 func (m mockHooksClient) ListSubscriptions(context.Context, servicehooks.ListSubscriptionsArgs) (*[]servicehooks.Subscription, error) {
 	var want []servicehooks.Subscription
 	raw, err := ioutil.ReadFile("testdata/hooks.json")
@@ -64,6 +75,7 @@ func (m mockHooksClient) ListSubscriptions(context.Context, servicehooks.ListSub
 	return &want, nil
 }
 
+// Tests
 func TestRepoFind(t *testing.T) {
 	repo := &repositoryService{&wrapper{
 		Project: "test-project",
@@ -161,6 +173,29 @@ func TestHooksList(t *testing.T) {
 
 	var want []*scm.Hook
 	raw, _ := ioutil.ReadFile("testdata/hooks.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
+func TestHookCreate(t *testing.T) {
+	repo := &repositoryService{&wrapper{
+		Project: "test-project",
+	}, mockGitClient{}, mockHooksClient{}}
+
+	ctx := context.Background()
+	got, _, err := repo.CreateHook(ctx, "test-repo", &scm.HookInput{
+		Events: scm.HookEvents{PullRequest: true},
+	})
+	if err != nil {
+		t.Error(err)
+	}
+
+	var want *scm.Hook
+	raw, _ := ioutil.ReadFile("testdata/hook.json.golden")
 	json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
