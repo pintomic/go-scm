@@ -53,6 +53,7 @@ func NewWithToken(uri string, token string) (*scm.Client, error) {
 	client.Repositories = &repositoryService{client, gitClient, hooksClient}
 	client.Webhooks = &webhookService{client, hooksClient}
 	client.Git = &gitService{client, gitClient}
+	client.Reviews = &reviewService{client}
 
 	return client.Client, nil
 }
