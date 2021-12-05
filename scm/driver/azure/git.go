@@ -74,15 +74,15 @@ func (g gitService) ListCommits(ctx context.Context, repo string, opts scm.Commi
 }
 
 func (g gitService) ListChanges(ctx context.Context, repo, ref string, opts scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
-	panic("implement me")
+	return nil, nil, scm.ErrNotSupported
 }
 
 func (g gitService) CompareCommits(ctx context.Context, repo, ref1, ref2 string, opts scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
-	panic("implement me")
+	return nil, nil, scm.ErrNotSupported
 }
 
 func (g gitService) ListTags(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
-	panic("implement me")
+	return nil, nil, scm.ErrNotSupported
 }
 
 func (g gitService) FindRef(ctx context.Context, repo, ref string) (string, *scm.Response, error) {
@@ -97,11 +97,11 @@ func (g gitService) FindRef(ctx context.Context, repo, ref string) (string, *scm
 }
 
 func (g gitService) DeleteRef(ctx context.Context, repo, ref string) (*scm.Response, error) {
-	panic("implement me")
+	return nil, scm.ErrNotSupported
 }
 
 func (g gitService) CreateRef(ctx context.Context, repo, ref, sha string) (*scm.Reference, *scm.Response, error) {
-	panic("implement me")
+	return nil, nil, scm.ErrNotSupported
 }
 
 func convertCommitList(src *[]git.GitCommitRef) []*scm.Commit {

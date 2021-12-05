@@ -158,6 +158,7 @@ func (s *repositoryService) FindCombinedStatus(ctx context.Context, repo, ref st
 }
 
 func (s *repositoryService) Create(ctx context.Context, input *scm.RepositoryInput) (*scm.Repository, *scm.Response, error) {
+	// CreateRepository(context.Context, CreateRepositoryArgs) (*GitRepository, error)
 	return nil, nil, scm.ErrNotSupported
 }
 
@@ -249,6 +250,7 @@ func (s *repositoryService) FindUserPermission(ctx context.Context, repo string,
 }
 
 func (s *repositoryService) Delete(ctx context.Context, repo string) (*scm.Response, error) {
+	// DeleteRepository(context.Context, DeleteRepositoryArgs) error
 	return nil, scm.ErrNotSupported
 }
 
