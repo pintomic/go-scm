@@ -1,0 +1,17 @@
+[
+  {
+    "commitId": "7fd1a60b01f91b314f59955a4e4d4e80d8edf11d",
+    "comment": "Fixed Typo",
+    "remoteUrl": "https://dev.azure.com/test-organization/test-project/_git/test-repo/commit/7fd1a60b01f91b314f59955a4e4d4e80d8edf11d",
+    "author": {
+      "name": "The Author",
+      "email": "author@nowhere.com",
+      "date": "2012-03-06T23:06:50Z"
+    },
+    "committer": {
+      "name": "The Committer",
+      "email": "committer@nowhere.com",
+      "date": "2012-03-06T23:06:50Z"
+    }
+  }
+]

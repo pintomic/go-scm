@@ -44,6 +44,17 @@ func (m mockGitClient) GetBranches(context.Context, git.GetBranchesArgs) (*[]git
 	return &want, nil
 }
 
+func (m mockGitClient) GetCommits(context.Context, git.GetCommitsArgs) (*[]git.GitCommitRef, error) {
+	var want []git.GitCommitRef
+	raw, err := ioutil.ReadFile("testdata/commits.json")
+	json.Unmarshal(raw, &want)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(want)
+	return &want, nil
+}
+
 // Tests
 func TestGitFindBranch(t *testing.T) {
 	gitService := &gitService{&wrapper{Project: "test-project"}, mockGitClient{}}
@@ -94,6 +105,25 @@ func TestGitBranchesList(t *testing.T) {
 
 	var want []*scm.Reference
 	raw, _ := ioutil.ReadFile("testdata/branches.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
+func TestGitCommitList(t *testing.T) {
+	gitService := &gitService{&wrapper{Project: "test-project"}, mockGitClient{}}
+
+	got, _, err := gitService.ListCommits(context.Background(), "test-repo", scm.CommitListOptions{})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	var want []*scm.Commit
+	raw, _ := ioutil.ReadFile("testdata/commits.json.golden")
 	json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {

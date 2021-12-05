@@ -51,7 +51,26 @@ func (g gitService) ListBranches(ctx context.Context, repo string, opts scm.List
 }
 
 func (g gitService) ListCommits(ctx context.Context, repo string, opts scm.CommitListOptions) ([]*scm.Commit, *scm.Response, error) {
-	panic("implement me")
+	itemVersion := ""
+	if opts.Ref != "" {
+		itemVersion = opts.Ref
+	}
+	if opts.Sha != "" {
+		itemVersion = opts.Sha
+	}
+	commits, err := g.gitClient.GetCommits(ctx, git.GetCommitsArgs{
+		RepositoryId: &repo,
+		Project:      &g.client.Project,
+		SearchCriteria: &git.GitQueryCommitsCriteria{
+			ItemVersion: &git.GitVersionDescriptor{
+				Version: &itemVersion,
+			},
+		},
+	})
+	if err != nil {
+		return nil, nil, err
+	}
+	return convertCommitList(commits), nil, nil
 }
 
 func (g gitService) ListChanges(ctx context.Context, repo, ref string, opts scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
@@ -83,6 +102,32 @@ func (g gitService) DeleteRef(ctx context.Context, repo, ref string) (*scm.Respo
 
 func (g gitService) CreateRef(ctx context.Context, repo, ref, sha string) (*scm.Reference, *scm.Response, error) {
 	panic("implement me")
+}
+
+func convertCommitList(src *[]git.GitCommitRef) []*scm.Commit {
+	var dst []*scm.Commit
+	for _, v := range *src {
+		dst = append(dst, convertCommitRef(v))
+	}
+	return dst
+}
+
+func convertCommitRef(from git.GitCommitRef) *scm.Commit {
+	return &scm.Commit{
+		Sha:     *from.CommitId,
+		Message: *from.Comment,
+		Author: scm.Signature{
+			Name:  *from.Author.Name,
+			Email: *from.Author.Email,
+			Date:  from.Author.Date.Time,
+		},
+		Link: *from.RemoteUrl,
+		Committer: scm.Signature{
+			Name:  *from.Committer.Name,
+			Email: *from.Committer.Email,
+			Date:  from.Committer.Date.Time,
+		},
+	}
 }
 
 func convertCommit(from git.GitCommit) *scm.Commit {
