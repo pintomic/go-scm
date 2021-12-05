@@ -20,11 +20,7 @@ func (g gitService) FindBranch(ctx context.Context, repo, name string) (*scm.Ref
 	if err != nil {
 		return nil, nil, err
 	}
-	return &scm.Reference{
-		Name: *branch.Name,
-		Path: scm.ExpandRef(*branch.Name, "refs/heads/"),
-		Sha:  *branch.Commit.CommitId,
-	}, nil, nil
+	return convertBranchStats(*branch), nil, nil
 }
 
 func (g gitService) FindCommit(ctx context.Context, repo, ref string) (*scm.Commit, *scm.Response, error) {
@@ -40,11 +36,18 @@ func (g gitService) FindCommit(ctx context.Context, repo, ref string) (*scm.Comm
 }
 
 func (g gitService) FindTag(ctx context.Context, repo, name string) (*scm.Reference, *scm.Response, error) {
-	panic("implement me")
+	return nil, nil, scm.ErrNotSupported
 }
 
 func (g gitService) ListBranches(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
-	panic("implement me")
+	branches, err := g.gitClient.GetBranches(ctx, git.GetBranchesArgs{
+		RepositoryId: &repo,
+		Project:      &g.client.Project,
+	})
+	if err != nil {
+		return nil, nil, err
+	}
+	return convertBranchStatsList(branches), nil, nil
 }
 
 func (g gitService) ListCommits(ctx context.Context, repo string, opts scm.CommitListOptions) ([]*scm.Commit, *scm.Response, error) {
@@ -102,5 +105,21 @@ func convertCommit(from git.GitCommit) *scm.Commit {
 		Tree: scm.CommitTree{
 			Sha: *from.TreeId,
 		},
+	}
+}
+
+func convertBranchStatsList(src *[]git.GitBranchStats) []*scm.Reference {
+	var dst []*scm.Reference
+	for _, v := range *src {
+		dst = append(dst, convertBranchStats(v))
+	}
+	return dst
+}
+
+func convertBranchStats(from git.GitBranchStats) *scm.Reference {
+	return &scm.Reference{
+		Name: *from.Name,
+		Path: scm.ExpandRef(*from.Name, "refs/heads/"),
+		Sha:  *from.Commit.CommitId,
 	}
 }
